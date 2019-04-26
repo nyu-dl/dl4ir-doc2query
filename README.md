@@ -71,7 +71,7 @@ $ wc -l ./msmarco_data/opennmt_format/*
    532751 ./msmarco_data/opennmt_format/tgt-train.txt
 ```
 
-The last step is to preprecess train and dev files with the following command:
+The last step is to preprocess train and dev files with the following command:
 ```
 python ./OpenNMT-py/preprocess.py \
   -train_src ${DATA_DIR}/opennmt_format/src-train.txt \
