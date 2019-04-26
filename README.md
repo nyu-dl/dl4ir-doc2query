@@ -21,8 +21,6 @@ pip install -r requirements.txt
 cd ..
 ```
 
-```
-
 And [Anserini](https://github.com/castorini/Anserini), so we can index and 
 retrieve the expanded documents.
 
@@ -152,14 +150,19 @@ perl ./OpenNMT-py/tools/multi-bleu.perl \
     ${DATA_DIR}/opennmt_format/tgt-dev.txt < ${DATA_DIR}/opennmt_format/pred-dev.txt
 ```
 
-The output should be similar to this one:
+The output should be similar to this:
+
 ```
+BLEU = 7.78, 32.6/13.1/4.9/2.5 (BP=0.915, ratio=0.918, hyp_len=40528, ref_len=44138)
 ```
+
+In case you don't want to train a doc2query model yourself, we made available 
+our trained model [here](https://drive.google.com/open?id=1ieQ4-d2zvxAF7iYqC_9sFYQCea1xPINU).
 
 ### Predicting Queries
 
-We use our best model checkpoint (iteration 15,000) to 
-predict 5 queries for each document in the collection:
+We use our best model checkpoint (iteration 15,000) to predict 5 queries for
+each document in the collection:
 ```
 python ./OpenNMT-py/translate.py \
   -gpu 0 \
