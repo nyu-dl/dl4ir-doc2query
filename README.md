@@ -49,7 +49,7 @@ tar -xvf ${DATA_DIR}/collectionandqueries.tar.gz -C ${DATA_DIR}
 
 To confirm, `collectionandqueries.tar.gz` should have MD5 checksum of `fed5aa512935c7b62787cb68ac9597d6`.
 
-The scripts below convert the data to a format that can be consumed by the
+The scripts below convert the data to a format that can be consumed by
 OpenNMT training and inference scripts:
 ```
 python ./convert_msmarco_to_opennmt.py \
@@ -127,7 +127,7 @@ python -u /scratch/rfn216/doc2query/git/dl4ir-doc2query/OpenNMT-py/train.py  \
         -gpu_ranks 0 1
 ```
 
-The command above starts training a transformer model using two GPU (you can 
+The command above starts training a transformer model using two GPUs (you can 
 train with one GPU by setting `gpu_ranks 0` and `world_size 1`). It should
 take approximately 2-4 hours to reach iteration 15,000, which contains the 
 lowest perplexity on the dev set (~15.7).
@@ -156,8 +156,7 @@ The output should be similar to this:
 BLEU = 7.78, 32.6/13.1/4.9/2.5 (BP=0.915, ratio=0.918, hyp_len=40528, ref_len=44138)
 ```
 
-In case you don't want to train a doc2query model yourself, we made available 
-our trained model [here](https://drive.google.com/open?id=1ieQ4-d2zvxAF7iYqC_9sFYQCea1xPINU).
+In case you don't want to train a doc2query model yourself, you can [download our trained model here](https://drive.google.com/open?id=1ieQ4-d2zvxAF7iYqC_9sFYQCea1xPINU).
 
 ### Predicting Queries
 
@@ -192,7 +191,7 @@ split -l 1000000 --numeric-suffixes ${DATA_DIR}/opennmt_format/src-collection.tx
 cat ${DATA_DIR}/opennmt_format/pred-collection_beam5.txt?? > ${DATA_DIR}/opennmt_format/pred-collection_beam5.txt
 ```
 
-In any case, we made available the output [here]().
+In any case, you can [download the predicted queries here](https://drive.google.com/file/d/1DyAkwwHUIE7Yk_svtTUZBlAtlPDA7u7B/view?usp=sharing).
 
 
 ### Expanding docs
@@ -255,8 +254,6 @@ On a slower machine with mechanical disks, the entire process might take as long
 The option `-hits` specifies the of documents per query to be retrieved.
 Thus, the output file should have approximately 6980 * 1000 = 6.9M lines. 
 
-In case you want to compare your retrieved docs against ours, we made our output
-available [here](https://drive.google.com/open?id=11dHqA0VBk6oHTW6HDHWR9qtBBQqTfHSI).
 
 Finally, we can evaluate the retrieved documents using this the official MS MARCO evaluation script: 
 
@@ -270,6 +267,8 @@ And the output should be like this:
 MRR @10: 0.21579006913175935
 QueriesRanked: 6980
 ```
+
+In case you want to compare your retrieved docs against ours, you can [download our retrieved docs here](https://drive.google.com/open?id=11dHqA0VBk6oHTW6HDHWR9qtBBQqTfHSI).
 
 ### Reranking with BERT
 
