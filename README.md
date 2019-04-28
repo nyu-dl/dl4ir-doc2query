@@ -11,11 +11,16 @@ MSMARCO Passage Re-Ranking Leaderboard (Apr 8th 2019) | Eval MRR@10  | Dev MRR@1
 
 The paper describing our implementation is [here](https://arxiv.org/pdf/1904.08375.pdf).
 
+
 ### Installation
+
 We first need to install [OpenNMT](http://opennmt.net/) so we can train a model
-to predict queries from documents.
+to predict queries from documents. We clone from 0.8.2 because that was the 
+version we trained our models. However, feel free to use a newer version, but we
+cannot guarantee that the commands below will work.
+
 ```
-git clone https://github.com/OpenNMT/OpenNMT-py
+git clone --branch 0.8.2 https://github.com/OpenNMT/OpenNMT-py.git
 cd OpenNMT-py
 pip install -r requirements.txt
 cd ..
@@ -71,7 +76,7 @@ $ wc -l ./msmarco_data/opennmt_format/*
    532751 ./msmarco_data/opennmt_format/tgt-train.txt
 ```
 
-The last step is to preprecess train and dev files with the following command:
+The last step is to preprocess train and dev files with the following command:
 ```
 python ./OpenNMT-py/preprocess.py \
   -train_src ${DATA_DIR}/opennmt_format/src-train.txt \
@@ -122,22 +127,22 @@ python -u /scratch/rfn216/doc2query/git/dl4ir-doc2query/OpenNMT-py/train.py  \
         -label_smoothing 0.1 \
         -valid_steps 5000 \
         -save_checkpoint_steps 5000 \
-        -world_size 2 \
+        -world_size 4 \
         -share_embeddings \
-        -gpu_ranks 0 1
+        -gpu_ranks 0 1 2 3
 ```
 
-The command above starts training a transformer model using two GPUs (you can 
+The command above starts training a transformer model using four GPUs (you can 
 train with one GPU by setting `gpu_ranks 0` and `world_size 1`). It should
-take approximately 2-4 hours to reach iteration 15,000, which contains the 
-lowest perplexity on the dev set (~15.7).
+take approximately 3-6 hours to reach iteration 10,000, which contains the 
+lowest perplexity on the dev set (~15.2).
 
 We can now evaluate in BLEU points the performance of our model:
 
 ```
 python ./OpenNMT-py/translate.py \
                      -gpu 0 \
-                     -model ${DATA_DIR}/doc2query_step_15000.pt \
+                     -model ${DATA_DIR}/doc2query_step_10000.pt \
                      -src ${DATA_DIR}/opennmt_format/src-dev.txt \
                      -tgt ${DATA_DIR}/opennmt_format/tgt-dev.txt \
                      -output ${DATA_DIR}/opennmt_format/pred-dev.txt \
@@ -153,19 +158,20 @@ perl ./OpenNMT-py/tools/multi-bleu.perl \
 The output should be similar to this:
 
 ```
-BLEU = 7.78, 32.6/13.1/4.9/2.5 (BP=0.915, ratio=0.918, hyp_len=40528, ref_len=44138)
+BLEU = 8.82, 35.0/14.3/5.7/2.5 (BP=0.957, ratio=0.958, hyp_len=34050, ref_len=35553)
 ```
 
-In case you don't want to train a doc2query model yourself, you can [download our trained model here](https://drive.google.com/open?id=1ieQ4-d2zvxAF7iYqC_9sFYQCea1xPINU).
+In case you don't want to train a doc2query model yourself, you can 
+[download our trained model here](https://drive.google.com/open?id=1tHL3ZcXBSqBcavpusQB0otxdOYDNW_rV).
 
 ### Predicting Queries
 
-We use our best model checkpoint (iteration 15,000) to predict 5 queries for
+We use our best model checkpoint (iteration 10,000) to predict 5 queries for
 each document in the collection:
 ```
 python ./OpenNMT-py/translate.py \
   -gpu 0 \
-  -model ${DATA_DIR}/doc2query_step_15000.pt \
+  -model ${DATA_DIR}/doc2query_step_10000.pt \
   -src ${DATADIR}/opennmt_format/src-collection.txt \
   -output ${DATADIR}/opennmt_format/pred-collection_beam5.txt \
   -batch_size 32 \
@@ -191,7 +197,7 @@ split -l 1000000 --numeric-suffixes ${DATA_DIR}/opennmt_format/src-collection.tx
 cat ${DATA_DIR}/opennmt_format/pred-collection_beam5.txt?? > ${DATA_DIR}/opennmt_format/pred-collection_beam5.txt
 ```
 
-In any case, you can [download the predicted queries here](https://drive.google.com/file/d/1DyAkwwHUIE7Yk_svtTUZBlAtlPDA7u7B/view?usp=sharing).
+In any case, you can [download the predicted queries here](https://drive.google.com/open?id=1WGeeMEI6Ol5ECP_XW0G35O3shPrJD6vJ).
 
 
 ### Expanding docs
@@ -264,15 +270,64 @@ python ./src/main/python/msmarco/msmarco_eval.py ${DATA_DIR}/qrels.dev.small.tsv
 And the output should be like this:
 
 ```
-MRR @10: 0.21579006913175935
+#####################
+MRR @10: 0.22155540774093688
 QueriesRanked: 6980
+#####################
 ```
 
-In case you want to compare your retrieved docs against ours, you can [download our retrieved docs here](https://drive.google.com/open?id=11dHqA0VBk6oHTW6HDHWR9qtBBQqTfHSI).
+Note that these results are 0.6 higher than the ones in the paper. This is due 
+to better BM25 tuning (b1=0.8, k=0.6).
 
-### Reranking with BERT
+In case you want to compare your retrieved docs against ours, you can 
+[download our retrieved docs here](https://drive.google.com/file/d/1uW2JF5aXDTjlKUnMQttXrCPo5pqjEphk/view?usp=sharing).
 
-Coming soon.
+## Reranking with BERT
+
+Most of the gains come from re-ranking with BERT the passages retrieved with
+BM25 + Doc2query. To implement BERT re-ranker, we follow the same procedure 
+described in 
+[BERT for Passage Re-ranking repository](https://github.com/nyu-dl/dl4marco-bert).
+
+We first need to convert dev queries and retrieved docs into the TFRecord format
+that will be consumed by BERT:
+
+```
+python convert_msmarco_to_tfrecord.py \
+  --output_folder=${DATA_DIR}/bert_tfrecord \
+  --collection_path=${DATA_DIR}/collection.tsv \
+  --vocab=vocab.txt \
+  --queries=${DATA_DIR}/queries.dev.small.tsv \
+  --run=${DATA_DIR}/run.dev.small.tsv \
+  --qrels=${DATA_DIR}/qrels.dev.small.tsv
+```
+
+We use this [Google's Colab to re-rank with BERT](https://colab.research.google.com/drive/1NXJZ5TaBj_i_g_0KxzJ9ZMsjn310h2YQ).
+
+Because we did not see any difference from training BERT with the expanded vs 
+original docs, we simple re-rank dev queries using the 
+[same checkpoint](https://drive.google.com/open?id=1crlASTMlsihALlkabAQP6JTYIZwC1Wm8)
+from the [BERT for Passage Re-ranking repository](https://github.com/nyu-dl/dl4marco-bert)
+, that is, no training is required in this step.
+
+The Colab is configured to use TPUs (instead of GPU/CPU) so we _only_ wait 3-6 
+hours to re-rank all 6980 dev set queries.
+
+After it finishes, we can download the run file (which is in your specified 
+Google Storage folder `${OUTPUT_DIR}/msmarco_predictions_dev.tsv`) and 
+evaluate it:
+
+```
+python ./src/main/python/msmarco/msmarco_eval.py ${DATA_DIR}/qrels.dev.small.tsv ${DATA_DIR}/msmarco_predictions_dev.tsv
+```
+
+The output should be like this:
+```
+#####################
+MRR @10: 
+QueriesRanked: 6980
+#####################
+```
 
 
 #### How do I cite this work?
