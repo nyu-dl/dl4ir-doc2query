@@ -302,19 +302,22 @@ python convert_msmarco_to_tfrecord.py \
   --qrels=${DATA_DIR}/qrels.dev.small.tsv
 ```
 
-We use this [Google's Colab to re-rank with BERT](https://colab.research.google.com/drive/1NXJZ5TaBj_i_g_0KxzJ9ZMsjn310h2YQ).
+This script above produces the files `dataset.tf` and `query_doc_ids.txt`, and 
+they should be moved to a folder in the ([Google Cloud Storage](https://cloud.google.com/storage/). For you convenience, you can [download these files here](https://drive.google.com/file/d/1oh2UwqDuXhqGutIqRWxglBSQQ9neb4b8/view?usp=sharing).
+
+We are now ready to use our [Google's Colab to re-rank with BERT](https://colab.research.google.com/drive/1NXJZ5TaBj_i_g_0KxzJ9ZMsjn310h2YQ).
 
 Because we did not see any difference from training BERT with the expanded vs 
 original docs, we simple re-rank dev queries using the 
 [same checkpoint](https://drive.google.com/open?id=1crlASTMlsihALlkabAQP6JTYIZwC1Wm8)
-from the [BERT for Passage Re-ranking repository](https://github.com/nyu-dl/dl4marco-bert), that is, no training is required in this step.
+from the [BERT for Passage Re-ranking repository](https://github.com/nyu-dl/dl4marco-bert), 
+that is, no training is required in this step.
 
-The Colab is configured to use TPUs (instead of GPU/CPU) so we _only_ wait 3-6 
-hours to re-rank all 6980 dev set queries.
+The Colab is configured to use TPUs and it should take 5-10 hours to re-rank all
+6980 dev set queries. If you use a GPU, expect this step to be 10x longer. 
 
-After it finishes, we can download the run file (which is in your specified 
-Google Storage folder `${OUTPUT_DIR}/msmarco_predictions_dev.tsv`) and 
-evaluate it:
+After it finishes, we can download the run file `msmarco_predictions_dev.tsv` 
+(which is in the Google Storage folder you specified in OUTPUT_DIR) and evaluate it:
 
 ```
 python ./src/main/python/msmarco/msmarco_eval.py ${DATA_DIR}/qrels.dev.small.tsv ${DATA_DIR}/msmarco_predictions_dev.tsv
@@ -323,10 +326,15 @@ python ./src/main/python/msmarco/msmarco_eval.py ${DATA_DIR}/qrels.dev.small.tsv
 The output should be like this:
 ```
 #####################
-MRR @10: 
+MRR @10: 0.3763750170555333
 QueriesRanked: 6980
 #####################
 ```
+
+Note that this MRR@10 is slightly higher than our leadearboard entry, 
+probably because the better tuned BM25.
+
+You can [download our run file here](https://drive.google.com/file/d/1H5mNO6z1ZR47pGkEFDF5Dcbmfd7le3Cc/view?usp=sharing).
 
 
 #### How do I cite this work?
