@@ -26,7 +26,7 @@ pip install -r requirements.txt
 cd ..
 ```
 
-And [Anserini](https://github.com/castorini/Anserini), so we can index and 
+We also need to install [Anserini](https://github.com/castorini/Anserini), so we can index and 
 retrieve the expanded documents.
 
 ```
@@ -232,7 +232,7 @@ Your speed may vary... with a modern desktop machine with an SSD, indexing takes
 
 ## Retrieving and Evaluating the Dev set
 
-Since queries of the set are too many (+100k), it would take a long time to retrieve all of them. To speed this up, we use only the queries that are in the qrels file: 
+Since queries of the dev set are too many (+100k), it would take a long time to retrieve all of them. To speed this up, we use only the queries that are in the qrels file: 
 
 ```
 python ./Anserini/src/main/python/msmarco/filter_queries.py --qrels=${DATA_DIR}/qrels.dev.small.tsv \
@@ -307,8 +307,7 @@ We use this [Google's Colab to re-rank with BERT](https://colab.research.google.
 Because we did not see any difference from training BERT with the expanded vs 
 original docs, we simple re-rank dev queries using the 
 [same checkpoint](https://drive.google.com/open?id=1crlASTMlsihALlkabAQP6JTYIZwC1Wm8)
-from the [BERT for Passage Re-ranking repository](https://github.com/nyu-dl/dl4marco-bert)
-, that is, no training is required in this step.
+from the [BERT for Passage Re-ranking repository](https://github.com/nyu-dl/dl4marco-bert), that is, no training is required in this step.
 
 The Colab is configured to use TPUs (instead of GPU/CPU) so we _only_ wait 3-6 
 hours to re-rank all 6980 dev set queries.
