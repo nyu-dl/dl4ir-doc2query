@@ -286,7 +286,7 @@ In case you want to compare your retrieved docs against ours, you can
 
 Most of the gains come from re-ranking with BERT the passages retrieved with
 BM25 + Doc2query. To implement BERT re-ranker, we follow the same procedure 
-described in 
+described in the
 [BERT for Passage Re-ranking repository](https://github.com/nyu-dl/dl4marco-bert).
 
 We first need to convert dev queries and retrieved docs into the TFRecord format
@@ -303,7 +303,7 @@ python convert_msmarco_to_tfrecord.py \
 ```
 
 This script above produces the files `dataset.tf` and `query_doc_ids.txt`, and 
-they should be moved to a folder in the ([Google Cloud Storage](https://cloud.google.com/storage/). For you convenience, you can [download these files here](https://drive.google.com/file/d/1oh2UwqDuXhqGutIqRWxglBSQQ9neb4b8/view?usp=sharing).
+they should be moved to a folder in the [Google Cloud Storage](https://cloud.google.com/storage/). For you convenience, you can [download these files here](https://drive.google.com/file/d/1oh2UwqDuXhqGutIqRWxglBSQQ9neb4b8/view?usp=sharing).
 
 We are now ready to use our [Google's Colab to re-rank with BERT](https://colab.research.google.com/drive/1NXJZ5TaBj_i_g_0KxzJ9ZMsjn310h2YQ).
 
