@@ -2,14 +2,13 @@
 
 This repository contains the code to reproduce our entry to the [MSMARCO passage
 ranking task](http://www.msmarco.org/leaders.aspx), which was placed first on April 8th, 2019.
+[The paper describing our implementation is here](https://arxiv.org/pdf/1904.08375.pdf).
 
 MSMARCO Passage Re-Ranking Leaderboard (Apr 8th 2019) | Eval MRR@10  | Dev MRR@10
 ------------------------------------- | :------: | :------:
 1st Place - BERTter Indexing (this code) | **36.8** | **37.5**
 2nd Place - SAN + BERT base              | 35.9     | 37.0
 3rd Place - BERT + Small Training        | 35.9     | 36.5
-
-The paper describing our implementation is [here](https://arxiv.org/pdf/1904.08375.pdf).
 
 
 ### Installation
