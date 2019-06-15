@@ -38,6 +38,8 @@ cd ../ndeval && make
 cd ../../../
 ```
 
+## MS MARCO
+
 ### Data Preprocessing
 
 First, we need to download and extract the MS MARCO dataset:
@@ -334,6 +336,11 @@ Note that this MRR@10 is slightly higher than our leadearboard entry,
 probably because the better tuned BM25.
 
 You can [download our run file here](https://drive.google.com/file/d/1H5mNO6z1ZR47pGkEFDF5Dcbmfd7le3Cc/view?usp=sharing).
+
+
+## TREC-CAR
+
+[Download our doc2query model trained on TREC-CAR here](https://drive.google.com/open?id=16KT1Lxax_gOewSAz8FqQlwcdpspkmwQ3).
 
 
 #### How do I cite this work?
