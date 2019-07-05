@@ -100,8 +100,8 @@ python ./OpenNMT-py/preprocess.py \
 
 ```
 python -u /scratch/rfn216/doc2query/git/dl4ir-doc2query/OpenNMT-py/train.py  \
-        -data ${DATADIR}/preprocessed \
-        -save_model ${RUNDIR}/model \
+        -data ${DATA_DIR}/preprocessed \
+        -save_model ${DATA_DIR}/doc2query \
         -layers 6 \
         -rnn_size 512 \
         -word_vec_size 512 \
@@ -110,7 +110,7 @@ python -u /scratch/rfn216/doc2query/git/dl4ir-doc2query/OpenNMT-py/train.py  \
         -encoder_type transformer \
         -decoder_type transformer \
         -position_encoding \
-        -train_steps ${TRAIN_STEPS} \
+        -train_steps 10000 \
         -max_generator_batches 2 \
         -dropout 0.1 \
         -batch_size 4096 \
@@ -173,8 +173,8 @@ each document in the collection:
 python ./OpenNMT-py/translate.py \
   -gpu 0 \
   -model ${DATA_DIR}/doc2query_step_10000.pt \
-  -src ${DATADIR}/opennmt_format/src-collection.txt \
-  -output ${DATADIR}/opennmt_format/pred-collection_beam5.txt \
+  -src ${DATA_DIR}/opennmt_format/src-collection.txt \
+  -output ${DATA_DIR}/opennmt_format/pred-collection_beam5.txt \
   -batch_size 32 \
   -beam_size 5 \
   --n_best 5 \
