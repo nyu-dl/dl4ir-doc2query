@@ -99,8 +99,8 @@ python ./OpenNMT-py/preprocess.py \
 ### Training doc2query (i.e. a transformer model)
 
 ```
-python -u /scratch/rfn216/doc2query/git/dl4ir-doc2query/OpenNMT-py/train.py  \
-        -data ${DATA_DIR}/preprocessed \
+python -u ./OpenNMT-py/train.py  \
+        -data ${DATA_DIR}/opennmt_format/preprocessed \
         -save_model ${DATA_DIR}/doc2query \
         -layers 6 \
         -rnn_size 512 \
