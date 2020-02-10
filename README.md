@@ -1,4 +1,4 @@
-*Update 02/10/2020: [Please check this link for an improved version of doc2query](http://doc2query.ai/)*
+**Update 02/10/2020: [Please check this link for an improved version of doc2query](http://doc2query.ai/)**
 
 ## Doc2query: Document Expansion by Query Prediction
 
