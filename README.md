@@ -1,3 +1,5 @@
+*Update 02/10/2020: [Please check this link for an improved version of doc2query](http://doc2query.ai/)*
+
 ## Doc2query: Document Expansion by Query Prediction
 
 This repository contains the code to reproduce our entry to the [MSMARCO passage
