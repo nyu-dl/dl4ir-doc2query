@@ -221,7 +221,7 @@ We can now index these docs as a `JsonCollection` using Anserini:
 
 ```
 sh ./Anserini/target/appassembler/bin/IndexCollection -collection JsonCollection \
- -generator LuceneDocumentGenerator -threads 9 -input ${DATA_DIR}/collection_jsonl \
+ -generator DefaultLuceneDocumentGenerator -threads 9 -input ${DATA_DIR}/collection_jsonl \
  -index ${DATA_DIR}/lucene-index-msmarco -optimize
 ```
 
